@@ -14,7 +14,7 @@ public class MainActivity extends AppCompatActivity {
 
     private RecyclerView rvPersons;
     private RecyclerView.LayoutManager layoutManager; // 리니어 레이아웃은 방향이 있음. 방향 설정을 위해
-    private PersonAdaptor personAdaptor; // 얘는 내가 띄워야함
+    private PersonAdaptor personAdaptor; // 얘는 내가 띄워야함. xml 아니라 클래스니까
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,7 +26,6 @@ public class MainActivity extends AppCompatActivity {
         initData(); // 여기서는 원래 통신을 해야함
     }
 
-
     // 어댑터 관련한 건 여기 다 모았엉
     private void initAdaptor(){
         layoutManager = new LinearLayoutManager(this, RecyclerView.VERTICAL, false);
@@ -35,16 +34,14 @@ public class MainActivity extends AppCompatActivity {
         rvPersons.setAdapter(personAdaptor); // 어댑터와 리사이클러뷰 연결
     }
 
-
     // 어댑터에다가 통신으로 받은 값을 넣어줘야함
     private void initData(){
         PersonProvider personProvider = new PersonProvider();
         personAdaptor.addItems(personProvider.findAll());
     }
 
+    // 메모리에 띄울 것과 관련한 것 여기
     private void init(){
         rvPersons = findViewById(R.id.rvPersons);
     }
-
-
 }

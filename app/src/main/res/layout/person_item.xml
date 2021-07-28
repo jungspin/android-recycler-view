@@ -28,7 +28,7 @@
         android:layout_height="0dp"/>
 
     <View
-        android:background="@color/black"
+        android:background="@android:color/darker_gray"
         android:layout_width="match_parent"
         android:layout_height="1dp"/>
 </androidx.appcompat.widget.LinearLayoutCompat>

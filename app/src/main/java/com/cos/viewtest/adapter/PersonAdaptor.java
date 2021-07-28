@@ -34,7 +34,9 @@ public class PersonAdaptor extends RecyclerView.Adapter<PersonAdaptor.MyViewHold
         // 최초에는 필요없음
     }
 
-    // 뷰홀더 객체 생성 -> 앱이 최초로 구동할 때 그 이후에는 데이터만 갈아끼울꺼니까
+
+
+    // ViewHolder 객체 만드는 친구 -> 앱이 최초로 구동할 때 그 이후에는 데이터만 갈아끼울꺼니까
     // MyViewHolder 여기서 실행
     // 콜백 메소드 -> 스택을 제공함
     // parent -> 리사이클러뷰가 들어옴 (지가 알아서 들어옴) : person_item 의 부모
@@ -46,11 +48,13 @@ public class PersonAdaptor extends RecyclerView.Adapter<PersonAdaptor.MyViewHold
                 (LayoutInflater) parent.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE); // 리사이클러 뷰의 모든 것이 여기 담김
         // 정확하게 리니어 레이아웃임
         View view = layoutInflater.inflate(R.layout.person_item, parent, false);
+        // 여기서 리스너 걸리면 됨
         return new MyViewHolder(view);
     }
 
     // 뷰홀더 데이터 갈아 끼우는 친구 -> 스크롤할때는 이것만 동작하겠지
     // holder : 우리가 만든 홀더
+    // setItem이 여기서 실행되어야한다. setItem 함수로 만든이유 : 쓰기 쉬우려고
     @Override
     public void onBindViewHolder(PersonAdaptor.MyViewHolder holder, int position) {
         Log.d(TAG, "onBindViewHolder: 데이터 끼워짐 "+ bindingCount);
@@ -69,26 +73,26 @@ public class PersonAdaptor extends RecyclerView.Adapter<PersonAdaptor.MyViewHold
         return persons.size();
     }
 
-    // 1. 뷰홀더를 만든다 -> 내부 클래스로 만듬
+    // 1. 뷰홀더를 만든다 -> 내부 클래스로 만듬 : 데이터 갈아끼우는 친구!!
     public static class MyViewHolder extends RecyclerView.ViewHolder {
 
-
+        // 전역변수
         private TextView tvName, tvTel;
 
-
         // 앱 구동시에 발동
-        public MyViewHolder(View itemView) {
+        // 뷰 들고와서 데이터 갈아 끼우는 애
+        // person_item을 메모리에 띄워서 view에 넣어줘야함
+        public MyViewHolder(View itemView) { // view : 리니어 레이아웃(person_item)
             super(itemView);
+            // 메모리에 떴을거라고 가정하고 연결해놓는 것임
             tvName = itemView.findViewById(R.id.tvName);
             tvTel = itemView.findViewById(R.id.tvTel);
         }
 
-        // 스크롤할 때 발동
+        // 앱 구동시 + 스크롤할 때 발동
         public void setItem(Person person){
             tvName.setText(person.getName());
             tvTel.setText(person.getTel());
         }
     }
-
-
 }
