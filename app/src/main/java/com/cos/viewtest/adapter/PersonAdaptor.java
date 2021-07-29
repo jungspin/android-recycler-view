@@ -5,11 +5,14 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.cos.viewtest.MainActivity;
 import com.cos.viewtest.R;
 import com.cos.viewtest.model.Person;
 
@@ -20,6 +23,13 @@ import java.util.List;
 public class PersonAdaptor extends RecyclerView.Adapter<PersonAdaptor.MyViewHolder> {
 
     private static final String TAG = "PersonAdaptor";
+
+    private MainActivity mContext;
+    private PersonAdaptor personAdaptor = this;
+
+    public PersonAdaptor(MainActivity mContext){
+        this.mContext = mContext; // 어댑터에서 화면에 접근할 수 있다
+    }
 
     // 3. 컬렉션
     private List<Person> persons = new ArrayList<>();
@@ -34,7 +44,31 @@ public class PersonAdaptor extends RecyclerView.Adapter<PersonAdaptor.MyViewHold
         // 최초에는 필요없음
     }
 
+    public void addItem(Person person){
+        this.persons.add(person);
+        notifyDataSetChanged();
+        mContext.mRvScroll();
+    }
 
+    public List<Person> getItems(){
+        return persons;
+    }
+
+    public void removeItem(int index){
+        persons.remove(index);
+        notifyDataSetChanged(); // 화면 동기화
+    }
+
+    public void updateItem(int index, Person person){
+        // 인덱스 번호 받아서, 해당하는 데이터에 강제로 데이터 덮어씌우기
+        Person p = persons.get(index);
+        Log.d(TAG, "updateItem: " + p);
+        p.setName(person.getName());
+        p.setTel(person.getTel());
+        notifyDataSetChanged();
+        //mContext.mRvScroll();
+
+    }
 
     // ViewHolder 객체 만드는 친구 -> 앱이 최초로 구동할 때 그 이후에는 데이터만 갈아끼울꺼니까
     // MyViewHolder 여기서 실행
@@ -47,8 +81,7 @@ public class PersonAdaptor extends RecyclerView.Adapter<PersonAdaptor.MyViewHold
         LayoutInflater layoutInflater = // xml 을 메모리에 띄워주는 클래스
                 (LayoutInflater) parent.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE); // 리사이클러 뷰의 모든 것이 여기 담김
         // 정확하게 리니어 레이아웃임
-        View view = layoutInflater.inflate(R.layout.person_item, parent, false);
-        // 여기서 리스너 걸리면 됨
+        View view =  layoutInflater.inflate(R.layout.person_item, parent, false);
         return new MyViewHolder(view);
     }
 
@@ -74,10 +107,11 @@ public class PersonAdaptor extends RecyclerView.Adapter<PersonAdaptor.MyViewHold
     }
 
     // 1. 뷰홀더를 만든다 -> 내부 클래스로 만듬 : 데이터 갈아끼우는 친구!!
-    public static class MyViewHolder extends RecyclerView.ViewHolder {
+    public class MyViewHolder extends RecyclerView.ViewHolder {
 
         // 전역변수
         private TextView tvName, tvTel;
+        //private PersonAdaptor personAdaptor;
 
         // 앱 구동시에 발동
         // 뷰 들고와서 데이터 갈아 끼우는 애
@@ -87,6 +121,27 @@ public class PersonAdaptor extends RecyclerView.Adapter<PersonAdaptor.MyViewHold
             // 메모리에 떴을거라고 가정하고 연결해놓는 것임
             tvName = itemView.findViewById(R.id.tvName);
             tvTel = itemView.findViewById(R.id.tvTel);
+
+            initListener();
+        }
+
+        private void initListener(){
+            itemView.setOnClickListener(v -> {
+                Log.d(TAG, "onCreateViewHolder: " + getAdapterPosition());
+                int index = getAdapterPosition();
+                // 다른 클래스라서 persons 못찾아 -> 얘한테 접근할 수 있는 함수 만들면 됨
+                Log.d(TAG, "initListener: " + personAdaptor.getItems().get(index).getName());
+		       /* TextView t = v.findViewById(R.id.tvName);
+		        Log.d(TAG, "initListener: "+ t.getText());*/
+                personAdaptor.removeItem(index);
+
+            });
+            itemView.setOnLongClickListener(v -> {
+                Log.d(TAG, "initListener: " + getAdapterPosition());
+                int index = getAdapterPosition();
+                updateItem(index, new Person("jungspin", "0103333"));
+                return true;
+            });
         }
 
         // 앱 구동시 + 스크롤할 때 발동
